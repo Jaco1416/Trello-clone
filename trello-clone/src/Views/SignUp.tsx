@@ -1,8 +1,9 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import LoginCard from '../Components/Login/LoginCard.tsx'
+import { SignUpCard } from '../Components/SignUp'
 
-function Login() {
+
+function SignUp() {
   return (
     <div className='flex h-screen w-full items-stretch'>
       <div className='bg-[#13ec5b] h-full w-1/2 flex items-center justify-center'>
@@ -16,11 +17,11 @@ function Login() {
           exit={{ opacity: 0, y: -12 }}
           transition={{ duration: 0.2, ease: 'easeOut' }}
         >
-          <LoginCard />
+          <SignUpCard />
         </motion.div>
       </div>
     </div>
   )
 }
 
-export default Login
+export default SignUp
