@@ -1,11 +1,10 @@
-import React from 'react'
 import { motion } from 'framer-motion'
 import LoginCard from '../Components/Login/LoginCard.tsx'
 
 function Login() {
   return (
     <div className='flex h-screen w-full items-stretch'>
-      <div className='bg-[#13ec5b] h-full w-1/2 flex items-center justify-center'>
+      <div className='bg-[#4bba70] h-full w-1/2 flex items-center justify-center'>
         <h1>helo howayu</h1>
       </div>
       <div className='bg-[#FFFFFF] h-full w-1/2 flex items-center justify-center'>

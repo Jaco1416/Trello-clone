@@ -1,36 +1,40 @@
 import React, { useState } from 'react'
-import Button from '../Common/Button.tsx'
-import Input from '../Common/Input.tsx'
-import { supabase } from '../../lib/supabaseClient.ts'
+import { AnimatePresence } from 'framer-motion'
+import { Button, Input, Alert } from '../Common/index.ts'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../Context/AuthContext.tsx'
 
 function LoginCard() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
   const navigate = useNavigate()
+  const { signIn } = useAuth()
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
     setError('')
-    setLoading(true)
+    setSuccess('')
+    setIsSubmitting(true)
 
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
+    const { error: signInError } = await signIn(email, password)
 
     if (signInError) {
       setError(signInError.message)
+      setIsSubmitting(false)
+      return
     }
 
-    setLoading(false)
+    setIsSubmitting(false)
+    setSuccess('Inicio de sesión exitoso.')
+    navigate('/home')
   }
 
   const handelRegister = () => {
-    navigate('/Signup')
+    navigate('/signup')
   }
 
   return (
@@ -80,9 +84,26 @@ function LoginCard() {
           />
           Remember for 30 days
         </label>
-        {error ? <p className='text-sm text-red-500'>{error}</p> : null}
-        <Button className='mt-2' type='submit' disabled={loading}>
-          {loading ? 'Ingresando...' : 'Log In'}
+        <AnimatePresence>
+          {error ? (
+            <Alert
+              variant='error'
+              title='No se pudo iniciar sesión'
+              message={error}
+              onClose={() => setError('')}
+            />
+          ) : null}
+          {success ? (
+            <Alert
+              variant='success'
+              title='Bienvenido'
+              message={success}
+              onClose={() => setSuccess('')}
+            />
+          ) : null}
+        </AnimatePresence>
+        <Button className='mt-2' type='submit' disabled={isSubmitting}>
+          {isSubmitting ? 'Ingresando...' : 'Log In'}
         </Button>
         <div className='my-2 flex items-center gap-3 text-xs text-slate-400'>
           <div className='h-px flex-1 bg-slate-200' />

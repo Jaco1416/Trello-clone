@@ -20,7 +20,7 @@ function Input({
   return (
     <div className='border-gray-300 border-2 rounded-md p-2 w-full'>
         <input
-          className='w-full bg-transparent outline-none'
+          className='w-full bg-transparent outline-none text-slate-700'
           type={type}
           placeholder={placeholder}
           value={value}

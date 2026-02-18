@@ -1,14 +1,39 @@
-import React from 'react'
-import Button from '../Common/Button.tsx'
-import Input from '../Common/Input.tsx'
+import React, { useState } from 'react'
+import { AnimatePresence } from 'framer-motion'
+import { Input, Button, Alert } from '../Common/index.ts'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../Context/AuthContext.tsx'
 
 function SignUpCard() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { signUp } = useAuth()
 
   const navigate = useNavigate()
-  
+
   const handleLogin = () => {
     navigate('/')
+  }
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault()
+    setError('')
+    setSuccess('')
+    setIsSubmitting(true)
+
+    const { error: signUpError } = await signUp(email, password)
+
+    if (signUpError) {
+      setError(signUpError.message)
+      setIsSubmitting(false)
+      return
+    }
+
+    setIsSubmitting(false)
+    setSuccess('Cuenta creada correctamente. Revisa tu correo para confirmar el registro.')
   }
 
   return (
@@ -19,7 +44,7 @@ function SignUpCard() {
           Join TaskFlow and start organizing your work.
         </p>
       </div>
-      <form className='flex flex-col gap-4'>
+      <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
         <div className='flex flex-col gap-2'>
           <label className='text-xs font-semibold uppercase tracking-wide text-slate-600'>
             Full Name
@@ -33,8 +58,10 @@ function SignUpCard() {
           <Input
             type='email'
             placeholder='name@company.com'
+            value={email}
             name='email'
             autoComplete='email'
+            onChange={(event) => setEmail(event.target.value)}
           />
         </div>
         <div className='flex flex-col gap-2'>
@@ -44,12 +71,32 @@ function SignUpCard() {
           <Input
             type='password'
             placeholder='Min. 8 characters'
+            value={password}
             name='password'
             autoComplete='new-password'
+            onChange={(event) => setPassword(event.target.value)}
           />
         </div>
-        <Button className='mt-2' type='submit'>
-          Create Account
+        <AnimatePresence>
+          {error ? (
+            <Alert
+              variant='error'
+              title='No se pudo registrar'
+              message={error}
+              onClose={() => setError('')}
+            />
+          ) : null}
+          {success ? (
+            <Alert
+              variant='success'
+              title='Registro exitoso'
+              message={success}
+              onClose={() => setSuccess('')}
+            />
+          ) : null}
+        </AnimatePresence>
+        <Button className='mt-2' type='submit' disabled={isSubmitting}>
+          {isSubmitting ? 'Creando...' : 'Create Account'}
         </Button>
         <div className='my-2 flex items-center gap-3 text-xs text-slate-400'>
           <div className='h-px flex-1 bg-slate-200' />
@@ -82,9 +129,7 @@ function SignUpCard() {
             Log In
           </button>
         </p>
-        <p className='mt-4 text-center text-[10px] text-slate-400'>
-          © 2024 TaskFlow Inc. All rights reserved.
-        </p>
+        <p className='mt-4 text-center text-[10px] text-slate-400'>� 2024 TaskFlow Inc. All rights reserved.</p>
       </form>
     </div>
   )
